@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Our Beautiful Journey</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Dancing+Script:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="floatingHearts" aria-hidden="true"></div>
+  <div class="top-heart-badge" aria-hidden="true">💙💚</div>
+
+  <button id="musicToggle" class="music-toggle" type="button" aria-pressed="false">
+    Music: Off
+  </button>
+
+  <main class="story-wrapper">
+    <section id="prankScreen" class="gate-screen" aria-label="April fool question page">
+      <div class="prank-simple">
+        <h2 class="prank-line">
+          <span>Unaku Nan</span>
+          <button id="prankOkBtn" class="prank-inline-ok" type="button">Ok</button>
+          <span>vaaa di ?</span>
+        </h2>
+        <div class="prank-yesno" aria-hidden="true">
+          <button class="prank-yn-btn" type="button">Yes</button>
+          <button class="prank-yn-btn" type="button">No</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="loginScreen" class="gate-screen hidden" aria-label="Login page">
+      <div class="gate-card">
+        <p class="gate-kicker">Private Love Book</p>
+        <h2>Login to Our Memories</h2>
+        <form id="loginForm" class="login-form" autocomplete="off">
+          <label>
+            Username
+            <input id="usernameInput" name="username" type="text" placeholder="Enter username" required>
+          </label>
+          <label>
+            Password
+            <input id="passwordInput" name="password" type="password" placeholder="Enter password" required>
+          </label>
+          <button type="submit">Continue</button>
+        </form>
+        <p id="loginMessage" class="gate-message" role="status" aria-live="polite"></p>
+      </div>
+    </section>
+
+    <section id="loveQuestionScreen" class="gate-screen hidden" aria-label="Love question page">
+      <div class="gate-card">
+        <p class="gate-kicker">One More Question</p>
+        <h2>Do you love me?</h2>
+        <div class="question-actions">
+          <button id="yesLoveBtn" class="yes-btn" type="button">Yes, Forever ❤️</button>
+          <button id="noLoveBtn" class="no-btn" type="button">No</button>
+        </div>
+      </div>
+    </section>
+
+    <section id="coverScreen" class="cover-screen hidden" aria-label="Book cover">
+      <div class="cover-overlay"></div>
+      <div class="cover-content">
+        <p class="cover-kicker">Hey pondati...</p>
+        <h1>Happy Birthday Wifeyyyyy❤️</h1>
+        <p class="cover-subtitle">Unakana Spl Bday Gift Pa</p>
+        <button id="openBookButton" class="open-book-btn" type="button">Open Our Story</button>
+      </div>
+    </section>
+
+    <section id="bookExperience" class="book-experience hidden" aria-label="Memory flip book">
+      <div class="memory-stage">
+        <div id="book" class="memory-stack"></div>
+      </div>
+
+      <div class="book-controls">
+        <button id="prevBtn" type="button">Previous</button>
+        <span id="pageIndicator">Memory 1 of 50</span>
+        <button id="nextBtn" type="button">Next</button>
+      </div>
+      <p class="swipe-hint">Unnai kanda naal muthal, Ennaye tholaithu viten adi</p>
+    </section>
+  </main>
+
+  <div id="closeOverlay" class="close-overlay" aria-hidden="true">
+    <div class="close-card">
+      <p class="close-title">Happy Birthday My Love💙💚</p>
+      <p class="birthday-message">Pondatiiiii... Wish You A Happiest Birthday ever di pondati...Unna romba pudikum di... Ivlo naal unkooda travel pannathu romba nalla irunthuchu...ipadiye life long travel pannanum...Unnaya enagyum vitu thara maten...unnaya official ahh illainalum...Unnaya valathurathu nan than...Romba perumaya solluven... Intha year unaku romba nalla pogum... Unaku ellamavum nan iruken sami... Love You Forever Pa ... Unna romba than miss pannuven... Mama than ennaya anupunaru nu nan nambure....And Finally , Unaku nan irunthen , iruken , irupen... Happy Birthday En chella magale</p>
+      <button id="reopenBookButton" type="button">Read Again</button>
+    </div>
+  </div>
+
+  <div id="valentineOverlay" class="close-overlay" aria-hidden="true">
+    <div class="close-card">
+      <p class="close-title">Will you be my valentine? 💙💚</p>
+      <div class="question-actions valentine-actions">
+        <button id="yesValentineBtn" class="yes-btn" type="button">Yes, Always</button>
+        <button id="noValentineBtn" class="no-btn" type="button">No</button>
+      </div>
+    </div>
+  </div>
+
+
+  <audio id="bgMusic" loop preload="auto">
+    <!-- Replace this file with your own romantic instrumental track -->
+    <source src="Enakkaaga-Poranthaayae.mp3" type="audio/mpeg">
+  </audio>
+
+  <script src="images-manifest.js"></script>
+  <script src="script.js"></script>
+</body>
+</html>
