@@ -426,7 +426,11 @@ function loadPageImage(page) {
 
   const encodedSrc = `./${encodeURI(src)}`;
   image.dataset.loading = "1";
-  image.src = encodedSrc;
+  if (imageCache.has(src)) {
+    image.src = imageCache.get(src).src;
+  } else {
+    image.src = encodedSrc;
+  }
   imageWrap.style.setProperty("--bg-image", `url("./${encodeURI(src)}")`);
 
   const markLoaded = () => {
@@ -450,7 +454,7 @@ function loadPageImage(page) {
 }
 
 function preloadNearbyImages() {
-  const radius = 2;
+  const radius = 5;
   const start = Math.max(0, currentPage - radius);
   const end = Math.min(pages.length - 1, currentPage + radius);
 
@@ -506,17 +510,42 @@ function createFinalPage(index) {
   return page;
 }
 
-function preloadAllImages(imageList) {
-  const promises = imageList.map((src) => {
-    return new Promise((resolve) => {
-      const img = new Image();
-      img.src = `./${encodeURI(src)}`;
-      img.onload = resolve;
-      img.onerror = resolve;
-    });
-  });
+const imageCache = new Map();
+let prefetchIndex = 0;
+let isPrefetchRunning = false;
 
-  return Promise.all(promises);
+function preloadImage(src) {
+  return new Promise((resolve) => {
+    if (imageCache.has(src)) {
+      resolve();
+      return;
+    }
+
+    const img = new Image();
+    img.src = `./${encodeURI(src)}`;
+
+    img.onload = () => {
+      imageCache.set(src, img);
+      resolve();
+    };
+
+    img.onerror = resolve;
+  });
+}
+
+async function startPrefetchQueue() {
+  if (isPrefetchRunning) {
+    return;
+  }
+
+  isPrefetchRunning = true;
+
+  while (prefetchIndex < memories.length) {
+    const src = memories[prefetchIndex].image;
+    await preloadImage(src);
+    prefetchIndex += 1;
+    await new Promise((resolve) => window.setTimeout(resolve, 60));
+  }
 }
 
 function buildBook() {
@@ -573,15 +602,15 @@ function turnBackward() {
 }
 
 async function openBook() {
-  if (openBookButton.disabled) {
-    return;
-  }
+  if (openBookButton.disabled) return;
 
   openBookButton.textContent = "Loading Memories...";
   openBookButton.disabled = true;
 
-  const imageList = memories.map((memory) => memory.image);
-  await preloadAllImages(imageList);
+  const firstImages = memories.slice(0, 5).map((memory) => memory.image);
+  await Promise.all(firstImages.map(preloadImage));
+  prefetchIndex = Math.max(prefetchIndex, firstImages.length);
+  startPrefetchQueue();
 
   coverScreen.classList.add("is-opening");
 
