@@ -389,9 +389,9 @@ function createMemoryPage(memory, index) {
   image.className = "memory-image";
   image.dataset.src = memory.image;
   image.alt = `Memory ${index + 1}`;
-  image.loading = "lazy";
+  image.loading = "eager";
   image.decoding = "async";
-  image.fetchPriority = "low";
+  image.fetchPriority = "high";
 
   image.addEventListener("error", () => {
     image.remove();
@@ -506,6 +506,19 @@ function createFinalPage(index) {
   return page;
 }
 
+function preloadAllImages(imageList) {
+  const promises = imageList.map((src) => {
+    return new Promise((resolve) => {
+      const img = new Image();
+      img.src = `./${encodeURI(src)}`;
+      img.onload = resolve;
+      img.onerror = resolve;
+    });
+  });
+
+  return Promise.all(promises);
+}
+
 function buildBook() {
   const fragment = document.createDocumentFragment();
 
@@ -559,7 +572,17 @@ function turnBackward() {
   }
 }
 
-function openBook() {
+async function openBook() {
+  if (openBookButton.disabled) {
+    return;
+  }
+
+  openBookButton.textContent = "Loading Memories...";
+  openBookButton.disabled = true;
+
+  const imageList = memories.map((memory) => memory.image);
+  await preloadAllImages(imageList);
+
   coverScreen.classList.add("is-opening");
 
   window.setTimeout(() => {
