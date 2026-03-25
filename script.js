@@ -296,7 +296,7 @@ const normalizedManifestImages = manifestImages
   .filter((path) => validImageExtPattern.test(path))
   .map((path) => (path.startsWith("images/") ? path : `images/${path}`));
 
-const memories = shuffleArray(normalizedManifestImages.slice()).map((imagePath) => ({
+const memories = shuffleArray(normalizedManifestImages.slice(0, 50)).map((imagePath) => ({
   image: imagePath,
 }));
 
@@ -415,7 +415,7 @@ function loadPageImage(page) {
 
   const image = page.querySelector(".memory-image");
   const imageWrap = page.querySelector(".memory-image-wrap");
-  if (!image || !imageWrap || image.dataset.loaded === "1") {
+  if (!image || !imageWrap || image.dataset.loaded === "1" || image.dataset.loading === "1") {
     return;
   }
 
@@ -424,9 +424,29 @@ function loadPageImage(page) {
     return;
   }
 
-  image.src = src;
-  image.dataset.loaded = "1";
-  imageWrap.style.setProperty("--bg-image", `url("${src}")`);
+  const encodedSrc = `./${encodeURI(src)}`;
+  image.dataset.loading = "1";
+  image.src = encodedSrc;
+  imageWrap.style.setProperty("--bg-image", `url("./${encodeURI(src)}")`);
+
+  const markLoaded = () => {
+    image.dataset.loaded = "1";
+    delete image.dataset.loading;
+  };
+
+  if (image.complete && image.naturalWidth > 0) {
+    markLoaded();
+    return;
+  }
+
+  image.addEventListener("load", markLoaded, { once: true });
+  image.addEventListener(
+    "error",
+    () => {
+      delete image.dataset.loading;
+    },
+    { once: true }
+  );
 }
 
 function preloadNearbyImages() {
