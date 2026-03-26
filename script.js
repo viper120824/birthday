@@ -429,11 +429,7 @@ function loadPageImage(page) {
 
   const encodedSrc = `./${encodeURI(src)}`;
   image.dataset.loading = "1";
-  if (imageCache.has(src)) {
-    image.src = imageCache.get(src).src;
-  } else {
-    image.src = encodedSrc;
-  }
+  image.src = encodedSrc;
   imageWrap.style.setProperty("--bg-image", `url("./${encodeURI(src)}")`);
 
   const markLoaded = () => {
@@ -513,7 +509,8 @@ function createFinalPage(index) {
   return page;
 }
 
-const imageCache = new Map();
+const imageCache = new Set();
+const MAX_PRELOAD_CONCURRENCY = 8;
 const loadingMessages = [
   "Loading our life...",
   "Meeting you again...",
@@ -536,7 +533,7 @@ function preloadImage(src) {
     img.src = `./${encodeURI(src)}`;
 
     img.onload = () => {
-      imageCache.set(src, img);
+      imageCache.add(src);
       resolve();
     };
 
@@ -565,14 +562,23 @@ async function preloadAllImagesWithProgress() {
 
   updateLoaderProgress(loaded, total);
 
-  await Promise.all(
-    memories.map((memory) =>
-      preloadImage(memory.image).then(() => {
-        loaded += 1;
-        updateLoaderProgress(loaded, total);
-      })
-    )
-  );
+  const preloadList = memories.map((memory) => memory.image);
+  let cursor = 0;
+
+  async function worker() {
+    while (cursor < preloadList.length) {
+      const index = cursor;
+      cursor += 1;
+      await preloadImage(preloadList[index]);
+      loaded += 1;
+      updateLoaderProgress(loaded, total);
+      await new Promise((resolve) => window.setTimeout(resolve, 0));
+    }
+  }
+
+  const workerCount = Math.min(MAX_PRELOAD_CONCURRENCY, preloadList.length);
+  const workers = Array.from({ length: workerCount }, () => worker());
+  await Promise.all(workers);
 }
 
 function buildBook() {
