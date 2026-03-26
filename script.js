@@ -565,11 +565,14 @@ async function preloadAllImagesWithProgress() {
 
   updateLoaderProgress(loaded, total);
 
-  for (const memory of memories) {
-    await preloadImage(memory.image);
-    loaded += 1;
-    updateLoaderProgress(loaded, total);
-  }
+  await Promise.all(
+    memories.map((memory) =>
+      preloadImage(memory.image).then(() => {
+        loaded += 1;
+        updateLoaderProgress(loaded, total);
+      })
+    )
+  );
 }
 
 function buildBook() {
