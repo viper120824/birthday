@@ -14,6 +14,9 @@ const yesValentineBtn = document.getElementById("yesValentineBtn");
 const noValentineBtn = document.getElementById("noValentineBtn");
 const coverScreen = document.getElementById("coverScreen");
 const openBookButton = document.getElementById("openBookButton");
+const loader = document.getElementById("loader");
+const progressFill = document.getElementById("progressFill");
+const progressText = document.getElementById("progressText");
 const bookExperience = document.getElementById("bookExperience");
 const book = document.getElementById("book");
 const prevBtn = document.getElementById("prevBtn");
@@ -511,8 +514,16 @@ function createFinalPage(index) {
 }
 
 const imageCache = new Map();
-let prefetchIndex = 0;
-let isPrefetchRunning = false;
+const loadingMessages = [
+  "Loading our life...",
+  "Meeting you again...",
+  "Saving our smiles...",
+  "Collecting our memories...",
+  "Replaying our laughter...",
+  "Turning our story pages...",
+  "Almost at the best chapter...",
+  "Opening our love story...",
+];
 
 function preloadImage(src) {
   return new Promise((resolve) => {
@@ -533,18 +544,31 @@ function preloadImage(src) {
   });
 }
 
-async function startPrefetchQueue() {
-  if (isPrefetchRunning) {
-    return;
+function updateLoaderProgress(loaded, total) {
+  const safeTotal = Math.max(total, 1);
+  const percent = Math.floor((loaded / safeTotal) * 100);
+  const messageIndex = Math.floor((percent / 100) * loadingMessages.length);
+  const message = loadingMessages[Math.min(messageIndex, loadingMessages.length - 1)];
+
+  if (progressFill) {
+    progressFill.style.width = `${percent}%`;
   }
 
-  isPrefetchRunning = true;
+  if (progressText) {
+    progressText.textContent = `${message} ${percent}%`;
+  }
+}
 
-  while (prefetchIndex < memories.length) {
-    const src = memories[prefetchIndex].image;
-    await preloadImage(src);
-    prefetchIndex += 1;
-    await new Promise((resolve) => window.setTimeout(resolve, 60));
+async function preloadAllImagesWithProgress() {
+  let loaded = 0;
+  const total = memories.length;
+
+  updateLoaderProgress(loaded, total);
+
+  for (const memory of memories) {
+    await preloadImage(memory.image);
+    loaded += 1;
+    updateLoaderProgress(loaded, total);
   }
 }
 
@@ -604,13 +628,14 @@ function turnBackward() {
 async function openBook() {
   if (openBookButton.disabled) return;
 
-  openBookButton.textContent = "Loading Memories...";
+  openBookButton.style.display = "none";
   openBookButton.disabled = true;
 
-  const firstImages = memories.slice(0, 5).map((memory) => memory.image);
-  await Promise.all(firstImages.map(preloadImage));
-  prefetchIndex = Math.max(prefetchIndex, firstImages.length);
-  startPrefetchQueue();
+  if (loader) {
+    loader.style.display = "block";
+  }
+
+  await preloadAllImagesWithProgress();
 
   coverScreen.classList.add("is-opening");
 

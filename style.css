@@ -373,6 +373,35 @@ body {
     inset 0 -2px 8px rgba(255, 255, 255, 0.68);
 }
 
+#loader {
+  display: none;
+  width: min(320px, 82vw);
+  margin: 16px auto 0;
+  text-align: center;
+}
+
+#progressBar {
+  width: 100%;
+  height: 10px;
+  background: rgba(236, 244, 248, 0.7);
+  border-radius: 999px;
+  overflow: hidden;
+}
+
+#progressFill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(135deg, #8de0c4, #7ebcf1);
+  transition: width 0.28s ease;
+}
+
+#progressText {
+  margin: 10px 0 0;
+  color: #edf8ff;
+  letter-spacing: 0.03em;
+  font-size: 1.04rem;
+}
+
 .book-experience {
   width: min(1100px, 96vw);
   display: grid;
