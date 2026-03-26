@@ -30,7 +30,7 @@ const musicToggle = document.getElementById("musicToggle");
 const bgMusic = document.getElementById("bgMusic");
 
 // Edit this list to change titles/messages/dates for each memory page.
-// Image paths are mapped automatically to images/image1.jpg ... images/image50.jpg
+// Image paths are mapped automatically from all files in images-manifest.js
 const memoryEntries = [
   {
     title: "The Day We First Met",
@@ -299,7 +299,7 @@ const normalizedManifestImages = manifestImages
   .filter((path) => validImageExtPattern.test(path))
   .map((path) => (path.startsWith("images/") ? path : `images/${path}`));
 
-const memories = shuffleArray(normalizedManifestImages.slice(0, 50)).map((imagePath) => ({
+const memories = shuffleArray(normalizedManifestImages.slice()).map((imagePath) => ({
   image: imagePath,
 }));
 
