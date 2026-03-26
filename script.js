@@ -310,6 +310,7 @@ let popupTimer = null;
 let touchStartX = 0;
 let touchStartY = 0;
 let mobileNoFloatTimer = null;
+let hasStartedBookLoading = false;
 
 bgMusic.volume = 0.38;
 
@@ -510,7 +511,9 @@ function createFinalPage(index) {
 }
 
 const imageCache = new Set();
-const MAX_PRELOAD_CONCURRENCY = 8;
+const PRELOAD_CHUNK_SIZE = 16;
+let preloadCursor = 0;
+let isChunkPreloading = false;
 const loadingMessages = [
   "Loading our life...",
   "Meeting you again...",
@@ -557,28 +560,52 @@ function updateLoaderProgress(loaded, total) {
 }
 
 async function preloadAllImagesWithProgress() {
+  // Kept for compatibility; delegates to chunked preload.
+  const target = Math.min(PRELOAD_CHUNK_SIZE, memories.length);
+  await preloadChunk(0, target, true);
+  preloadCursor = target;
+}
+
+async function preloadChunk(start, end, showProgress = false) {
+  const safeStart = Math.max(0, start);
+  const safeEnd = Math.min(end, memories.length);
+  const chunkTotal = Math.max(safeEnd - safeStart, 1);
   let loaded = 0;
-  const total = memories.length;
 
-  updateLoaderProgress(loaded, total);
-
-  const preloadList = memories.map((memory) => memory.image);
-  let cursor = 0;
-
-  async function worker() {
-    while (cursor < preloadList.length) {
-      const index = cursor;
-      cursor += 1;
-      await preloadImage(preloadList[index]);
-      loaded += 1;
-      updateLoaderProgress(loaded, total);
-      await new Promise((resolve) => window.setTimeout(resolve, 0));
-    }
+  if (showProgress) {
+    updateLoaderProgress(0, chunkTotal);
   }
 
-  const workerCount = Math.min(MAX_PRELOAD_CONCURRENCY, preloadList.length);
-  const workers = Array.from({ length: workerCount }, () => worker());
-  await Promise.all(workers);
+  for (let i = safeStart; i < safeEnd; i += 1) {
+    await preloadImage(memories[i].image);
+    loaded += 1;
+    if (showProgress) {
+      updateLoaderProgress(loaded, chunkTotal);
+    }
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+  }
+}
+
+async function ensureNextChunkPreloaded() {
+  if (!hasStartedBookLoading || isChunkPreloading || preloadCursor >= memories.length) {
+    return;
+  }
+
+  const currentImageNumber = currentPage + 1;
+  const gap = preloadCursor - currentImageNumber;
+  if (gap >= PRELOAD_CHUNK_SIZE) {
+    return;
+  }
+
+  isChunkPreloading = true;
+  const nextEnd = Math.min(preloadCursor + PRELOAD_CHUNK_SIZE, memories.length);
+  await preloadChunk(preloadCursor, nextEnd, false);
+  preloadCursor = nextEnd;
+  isChunkPreloading = false;
+
+  if (preloadCursor < memories.length) {
+    void ensureNextChunkPreloaded();
+  }
 }
 
 function buildBook() {
@@ -607,6 +634,7 @@ function updateBook() {
 
   prevBtn.disabled = currentPage === 0;
   preloadNearbyImages();
+  void ensureNextChunkPreloaded();
 }
 
 function turnForward() {
@@ -637,6 +665,7 @@ function turnBackward() {
 async function openBook() {
   if (openBookButton.disabled) return;
 
+  hasStartedBookLoading = true;
   openBookButton.style.display = "none";
   openBookButton.disabled = true;
 
@@ -645,10 +674,14 @@ async function openBook() {
   }
 
   await preloadAllImagesWithProgress();
+  void ensureNextChunkPreloaded();
 
   coverScreen.classList.add("is-opening");
 
   window.setTimeout(() => {
+    if (loader) {
+      loader.style.display = "none";
+    }
     coverScreen.classList.add("hidden");
     bookExperience.classList.remove("hidden");
     window.requestAnimationFrame(() => {
