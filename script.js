@@ -299,9 +299,48 @@ const normalizedManifestImages = manifestImages
   .filter((path) => validImageExtPattern.test(path))
   .map((path) => (path.startsWith("images/") ? path : `images/${path}`));
 
-const memories = shuffleArray(normalizedManifestImages.slice()).map((imagePath) => ({
+const dateBySlideNumber = {
+  0: "June 22, 2024",
+  1: "January 11, 2025",
+  2: "March 31, 2025",
+  3: "April 13, 2025",
+  4: "June 28, 2025",
+  5: "August 10, 2025",
+  6: "August 13, 2025",
+  7: "September 4, 2025",
+  8: "September 8, 2025",
+  9: "January 18, 2026",
+  10: "March 31, 2026",
+};
+
+const customDescriptions = {
+  11: "The Bond between Dr💕 and Er💕....such an amazing bond Priya💚💙...",
+  12: "Those nostalgic pics where we joined together first time😍...",
+  13: "The biscuits too tell💞... Its always \"VP\"❣️💫",
+  14: "Its amazing hold you in my hands my young child🌸✨",
+  15: "The pic that we unexpected but the art of samthanafying you 🤌❤️‍🩹",
+  16: "The pic we wanted to take🥺... Just us of 8 is enough for life❤️...",
+};
+
+function getSlideNumber(imagePath) {
+  const fileName = (imagePath.split("/").pop() || "").replace(/\.[^.]+$/, "");
+  const parsed = Number.parseInt(fileName, 10);
+  return Number.isNaN(parsed) ? Number.MAX_SAFE_INTEGER : parsed;
+}
+
+const slideImages = normalizedManifestImages
+  .slice()
+  .sort((a, b) => getSlideNumber(a) - getSlideNumber(b))
+  .slice(0, 17);
+
+const memories = slideImages.map((imagePath) => {
+  const slideNumber = getSlideNumber(imagePath);
+  return {
   image: imagePath,
-}));
+  dateLabel: dateBySlideNumber[slideNumber] || "",
+  description: customDescriptions[slideNumber] || "",
+};
+});
 
 const totalMemoryCount = memories.length;
 const pages = [];
@@ -311,6 +350,8 @@ let touchStartX = 0;
 let touchStartY = 0;
 let mobileNoFloatTimer = null;
 let hasStartedBookLoading = false;
+let autoSlideTimer = null;
+let slideEffectTimer = null;
 
 bgMusic.volume = 0.38;
 
@@ -382,6 +423,9 @@ function createMemoryPage(memory, index) {
   const page = document.createElement("article");
   page.className = "page";
   page.dataset.index = String(index);
+  if (memory.description) {
+    page.classList.add("has-description");
+  }
 
   const front = document.createElement("div");
   front.className = "page-face front";
@@ -392,10 +436,17 @@ function createMemoryPage(memory, index) {
   const image = document.createElement("img");
   image.className = "memory-image";
   image.dataset.src = memory.image;
-  image.alt = `Memory ${index + 1}`;
-  image.loading = "eager";
+  image.alt = `Slide ${index + 1}`;
+  image.loading = "lazy";
   image.decoding = "async";
-  image.fetchPriority = "high";
+  image.fetchPriority = "low";
+
+  if (memory.dateLabel) {
+    const dateLabel = document.createElement("p");
+    dateLabel.className = "slide-date";
+    dateLabel.textContent = memory.dateLabel;
+    imageWrap.appendChild(dateLabel);
+  }
 
   image.addEventListener("error", () => {
     image.remove();
@@ -407,6 +458,14 @@ function createMemoryPage(memory, index) {
   });
 
   imageWrap.appendChild(image);
+
+  if (memory.description) {
+    const description = document.createElement("p");
+    description.className = "slide-description";
+    description.textContent = memory.description;
+    imageWrap.appendChild(description);
+  }
+
   front.append(imageWrap);
   page.append(front);
   return page;
@@ -607,6 +666,25 @@ function startBackgroundLoader() {
   loadBatch();
 }
 
+function playActiveSlideEffect() {
+  // Date is now fixed at bottom caption position (same as description).
+}
+
+function startAutoSlideShow() {
+  if (autoSlideTimer) {
+    window.clearInterval(autoSlideTimer);
+  }
+
+  autoSlideTimer = window.setInterval(() => {
+    if (pages.length <= 1 || bookExperience.classList.contains("hidden")) {
+      return;
+    }
+
+    currentPage = (currentPage + 1) % pages.length;
+    updateBook();
+  }, 5000);
+}
+
 function buildBook() {
   const fragment = document.createDocumentFragment();
 
@@ -675,6 +753,7 @@ async function openBook() {
   await preloadAllImagesWithProgress();
   bgIndex = Math.min(INITIAL_PRELOAD_COUNT, memories.length);
   startBackgroundLoader();
+  updateBook();
 
   coverScreen.classList.add("is-opening");
 
