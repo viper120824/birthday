@@ -644,7 +644,7 @@ function updateLoaderProgress(loaded, total) {
 }
 
 async function preloadAllImagesWithProgress() {
-  const target = Math.min(INITIAL_PRELOAD_COUNT, memories.length);
+  const target = memories.length;
   let loaded = 0;
   updateLoaderProgress(0, target);
 
@@ -714,7 +714,6 @@ function updateBook() {
 
   prevBtn.disabled = currentPage === 0;
   preloadNearbyImages();
-  startBackgroundLoader();
 }
 
 function turnForward() {
@@ -754,8 +753,7 @@ async function openBook() {
   }
 
   await preloadAllImagesWithProgress();
-  bgIndex = Math.min(INITIAL_PRELOAD_COUNT, memories.length);
-  startBackgroundLoader();
+  bgIndex = memories.length;
   updateBook();
 
   coverScreen.classList.add("is-opening");
@@ -898,7 +896,7 @@ function resetBook() {
     bgLoaderTimer = null;
   }
   isBackgroundLoaderRunning = false;
-  bgIndex = Math.min(INITIAL_PRELOAD_COUNT, memories.length);
+  bgIndex = memories.length;
   valentineOverlay.classList.remove("show");
   valentineOverlay.setAttribute("aria-hidden", "true");
   closeOverlay.classList.remove("show");
