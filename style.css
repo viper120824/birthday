@@ -270,12 +270,13 @@ body {
 
 .question-actions .no-btn {
   position: absolute;
-  left: 64%;
+  left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
   min-width: 86px;
   opacity: 0.9;
-  transition: left 0.22s ease, top 0.22s ease, transform 0.22s ease;
+  transition: transform 0.2s ease;
+  will-change: transform;
   z-index: 2;
 }
 
@@ -788,6 +789,8 @@ body.slideshow-mode .swipe-hint {
   visibility: hidden;
   transition: opacity 0.35s ease;
   background: rgba(34, 14, 13, 0.42);
+  backface-visibility: hidden;
+  contain: paint;
 }
 
 .close-overlay.show {
@@ -804,6 +807,9 @@ body.slideshow-mode .swipe-hint {
     radial-gradient(circle at 22% 18%, rgba(189, 255, 228, 0.85), transparent 44%),
     linear-gradient(150deg, #e8fff7, #cceee8 64%, #b8d8f2);
   box-shadow: 0 25px 40px rgba(37, 15, 12, 0.34);
+  backface-visibility: hidden;
+  transform: translateZ(0);
+  will-change: transform, opacity;
 }
 
 .close-title {

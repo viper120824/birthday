@@ -818,25 +818,24 @@ function moveNoButtonAway(button, pointerX, pointerY) {
   const minLeft = buttonRect.width / 2;
   const maxTop = rect.height - buttonRect.height / 2;
   const minTop = buttonRect.height / 2;
-  const currentLeft = parseFloat(button.dataset.left || "64");
-  const currentTop = parseFloat(button.dataset.top || "50");
+  const currentOffsetX = parseFloat(button.dataset.offsetX || "0");
+  const currentOffsetY = parseFloat(button.dataset.offsetY || "0");
   const fleeX = dx === 0 ? (Math.random() > 0.5 ? 1 : -1) : -dx / Math.abs(dx);
   const fleeY = dy === 0 ? (Math.random() > 0.5 ? 1 : -1) : -dy / Math.abs(dy);
   const stepX = 14 + Math.random() * 20;
   const stepY = 12 + Math.random() * 18;
-  let nextLeftPx = (currentLeft / 100) * rect.width + fleeX * stepX;
-  let nextTopPx = (currentTop / 100) * rect.height + fleeY * stepY;
+  let nextCenterXPx = rect.width / 2 + currentOffsetX + fleeX * stepX;
+  let nextCenterYPx = rect.height / 2 + currentOffsetY + fleeY * stepY;
 
-  nextLeftPx = Math.max(minLeft, Math.min(maxLeft, nextLeftPx));
-  nextTopPx = Math.max(minTop, Math.min(maxTop, nextTopPx));
+  nextCenterXPx = Math.max(minLeft, Math.min(maxLeft, nextCenterXPx));
+  nextCenterYPx = Math.max(minTop, Math.min(maxTop, nextCenterYPx));
 
-  const nextLeftPercent = (nextLeftPx / rect.width) * 100;
-  const nextTopPercent = (nextTopPx / rect.height) * 100;
+  const nextOffsetX = nextCenterXPx - rect.width / 2;
+  const nextOffsetY = nextCenterYPx - rect.height / 2;
 
-  button.style.left = `${nextLeftPercent}%`;
-  button.style.top = `${nextTopPercent}%`;
-  button.dataset.left = String(nextLeftPercent);
-  button.dataset.top = String(nextTopPercent);
+  button.style.transform = `translate(-50%, -50%) translate(${nextOffsetX}px, ${nextOffsetY}px)`;
+  button.dataset.offsetX = String(nextOffsetX);
+  button.dataset.offsetY = String(nextOffsetY);
 }
 
 function randomizeNoButtonPosition(button) {
@@ -858,13 +857,12 @@ function randomizeNoButtonPosition(button) {
 
   const nextLeftPx = minLeft + Math.random() * (maxLeft - minLeft);
   const nextTopPx = minTop + Math.random() * (maxTop - minTop);
-  const nextLeftPercent = (nextLeftPx / rect.width) * 100;
-  const nextTopPercent = (nextTopPx / rect.height) * 100;
+  const nextOffsetX = nextLeftPx - rect.width / 2;
+  const nextOffsetY = nextTopPx - rect.height / 2;
 
-  button.style.left = `${nextLeftPercent}%`;
-  button.style.top = `${nextTopPercent}%`;
-  button.dataset.left = String(nextLeftPercent);
-  button.dataset.top = String(nextTopPercent);
+  button.style.transform = `translate(-50%, -50%) translate(${nextOffsetX}px, ${nextOffsetY}px)`;
+  button.dataset.offsetX = String(nextOffsetX);
+  button.dataset.offsetY = String(nextOffsetY);
 }
 
 function runMobileNoButtonFloat() {
