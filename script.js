@@ -314,6 +314,20 @@ const dateBySlideNumber = {
   10: "March 31, 2026",
 };
 
+const shortTitleBySlideNumber = {
+  0: "The Shivering Day☺️",
+  1: "The First Liplock💋",
+  2: "First Outing Ever💙💚",
+  3: "The Day with Special💖",
+  4: "The Forevr Hands Together🫂",
+  5: "The First Movie Date💘",
+  6: "The First Nyt As Together🫣",
+  7: "The Travel With Sareee!!!💓",
+  8: "Just Her On My Shoulder❣️",
+  9: "The Day After Long time❤️‍🩹",
+  10: "The Day With More Maturity✨",
+};
+
 const customDescriptions = {
   11: "The Bond between Dr💕 and Er💕....such an amazing bond Priya💚💙...",
   12: "Those nostalgic pics where we joined together first time😍...",
@@ -336,9 +350,11 @@ const slideImages = normalizedManifestImages
 
 const memories = slideImages.map((imagePath) => {
   const slideNumber = getSlideNumber(imagePath);
+  const dateText = dateBySlideNumber[slideNumber] || "";
+  const shortTitle = shortTitleBySlideNumber[slideNumber] || "";
   return {
   image: imagePath,
-  dateLabel: dateBySlideNumber[slideNumber] || "",
+  dateLabel: dateText && shortTitle ? `${dateText} • ${shortTitle}` : dateText || shortTitle,
   description: customDescriptions[slideNumber] || "",
 };
 });
