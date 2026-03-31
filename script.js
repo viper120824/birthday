@@ -18,6 +18,7 @@ const loader = document.getElementById("loader");
 const progressFill = document.getElementById("progressFill");
 const progressText = document.getElementById("progressText");
 const bookExperience = document.getElementById("bookExperience");
+const memoryStage = document.querySelector(".memory-stage");
 const book = document.getElementById("book");
 const prevBtn = document.getElementById("prevBtn");
 const nextBtn = document.getElementById("nextBtn");
@@ -350,8 +351,8 @@ let touchStartX = 0;
 let touchStartY = 0;
 let mobileNoFloatTimer = null;
 let hasStartedBookLoading = false;
-let autoSlideTimer = null;
 let slideEffectTimer = null;
+const PRELUDE_DURATION = 1300;
 
 bgMusic.volume = 0.38;
 
@@ -422,6 +423,7 @@ function showLovePopup() {
 function createMemoryPage(memory, index) {
   const page = document.createElement("article");
   page.className = "page";
+  page.classList.add(`slide-fx-${(index % 17) + 1}`);
   page.dataset.index = String(index);
   if (memory.description) {
     page.classList.add("has-description");
@@ -670,21 +672,6 @@ function playActiveSlideEffect() {
   // Date is now fixed at bottom caption position (same as description).
 }
 
-function startAutoSlideShow() {
-  if (autoSlideTimer) {
-    window.clearInterval(autoSlideTimer);
-  }
-
-  autoSlideTimer = window.setInterval(() => {
-    if (pages.length <= 1 || bookExperience.classList.contains("hidden")) {
-      return;
-    }
-
-    currentPage = (currentPage + 1) % pages.length;
-    updateBook();
-  }, 5000);
-}
-
 function buildBook() {
   const fragment = document.createDocumentFragment();
 
@@ -764,6 +751,12 @@ async function openBook() {
     coverScreen.classList.add("hidden");
     bookExperience.classList.remove("hidden");
     window.requestAnimationFrame(() => {
+      if (memoryStage) {
+        memoryStage.classList.add("prelude");
+        window.setTimeout(() => {
+          memoryStage.classList.remove("prelude");
+        }, PRELUDE_DURATION);
+      }
       bookExperience.classList.add("show");
     });
   }, 650);

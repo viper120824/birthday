@@ -586,6 +586,60 @@ body.slideshow-mode .memory-stage {
   background: linear-gradient(145deg, #102f35, #1c4c59);
 }
 
+body.slideshow-mode .memory-stage.prelude::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 30;
+  pointer-events: none;
+  background:
+    radial-gradient(circle at 20% 30%, rgba(157, 255, 229, 0.48), transparent 40%),
+    radial-gradient(circle at 80% 70%, rgba(150, 204, 255, 0.42), transparent 40%),
+    linear-gradient(135deg, rgba(7, 30, 35, 0.95), rgba(14, 49, 58, 0.88));
+  animation: prelude-glow 1.3s ease forwards;
+}
+
+.page.active.slide-fx-1 .memory-image { animation: fx1 4.8s ease both; }
+.page.active.slide-fx-2 .memory-image { animation: fx2 4.8s ease both; }
+.page.active.slide-fx-3 .memory-image { animation: fx3 4.8s ease both; }
+.page.active.slide-fx-4 .memory-image { animation: fx4 4.8s ease both; }
+.page.active.slide-fx-5 .memory-image { animation: fx5 4.8s ease both; }
+.page.active.slide-fx-6 .memory-image { animation: fx6 4.8s ease both; }
+.page.active.slide-fx-7 .memory-image { animation: fx7 4.8s ease both; }
+.page.active.slide-fx-8 .memory-image { animation: fx8 4.8s ease both; }
+.page.active.slide-fx-9 .memory-image { animation: fx9 4.8s ease both; }
+.page.active.slide-fx-10 .memory-image { animation: fx10 4.8s ease both; }
+.page.active.slide-fx-11 .memory-image { animation: fx11 4.8s ease both; }
+.page.active.slide-fx-12 .memory-image { animation: fx12 4.8s ease both; }
+.page.active.slide-fx-13 .memory-image { animation: fx13 4.8s ease both; }
+.page.active.slide-fx-14 .memory-image { animation: fx14 4.8s ease both; }
+.page.active.slide-fx-15 .memory-image { animation: fx15 4.8s ease both; }
+.page.active.slide-fx-16 .memory-image { animation: fx16 4.8s ease both; }
+.page.active.slide-fx-17 .memory-image { animation: fx17 4.8s ease both; }
+
+@keyframes prelude-glow {
+  0% { opacity: 1; transform: scale(1); }
+  70% { opacity: 0.85; transform: scale(1.03); }
+  100% { opacity: 0; transform: scale(1.08); }
+}
+@keyframes fx1 { from { opacity: 0; transform: scale(1.16); filter: blur(8px); } to { opacity: 1; transform: scale(1); filter: blur(0); } }
+@keyframes fx2 { from { opacity: 0; transform: scale(1.12); filter: saturate(0.55); } to { opacity: 1; transform: scale(1); filter: saturate(1); } }
+@keyframes fx3 { from { opacity: 0; transform: scale(0.92); filter: contrast(0.78); } to { opacity: 1; transform: scale(1); filter: contrast(1); } }
+@keyframes fx4 { from { opacity: 0; transform: scale(1.09); filter: brightness(1.25); } to { opacity: 1; transform: scale(1); filter: brightness(1); } }
+@keyframes fx5 { from { opacity: 0; transform: scale(1.06) rotate(-1.6deg); filter: blur(4px); } to { opacity: 1; transform: scale(1) rotate(0); filter: blur(0); } }
+@keyframes fx6 { from { opacity: 0; transform: scale(1.06) rotate(1.6deg); filter: blur(4px); } to { opacity: 1; transform: scale(1) rotate(0); filter: blur(0); } }
+@keyframes fx7 { from { opacity: 0; transform: scale(0.94); filter: grayscale(0.55); } to { opacity: 1; transform: scale(1); filter: grayscale(0); } }
+@keyframes fx8 { from { opacity: 0; transform: scale(1.1); filter: sepia(0.45); } to { opacity: 1; transform: scale(1); filter: sepia(0); } }
+@keyframes fx9 { from { opacity: 0; transform: scale(1.08); filter: hue-rotate(-14deg); } to { opacity: 1; transform: scale(1); filter: hue-rotate(0); } }
+@keyframes fx10 { from { opacity: 0; transform: scale(1.08); filter: hue-rotate(14deg); } to { opacity: 1; transform: scale(1); filter: hue-rotate(0); } }
+@keyframes fx11 { from { opacity: 0; transform: scale(0.93); filter: brightness(0.72); } to { opacity: 1; transform: scale(1); filter: brightness(1); } }
+@keyframes fx12 { from { opacity: 0; transform: scale(1.11); filter: contrast(1.45); } to { opacity: 1; transform: scale(1); filter: contrast(1); } }
+@keyframes fx13 { from { opacity: 0; transform: scale(1.1); filter: blur(5px) saturate(1.35); } to { opacity: 1; transform: scale(1); filter: blur(0) saturate(1); } }
+@keyframes fx14 { from { opacity: 0; transform: scale(0.9); filter: brightness(1.35) blur(2px); } to { opacity: 1; transform: scale(1); filter: brightness(1) blur(0); } }
+@keyframes fx15 { from { opacity: 0; transform: scale(1.14); filter: contrast(1.28) blur(2px); } to { opacity: 1; transform: scale(1); filter: contrast(1) blur(0); } }
+@keyframes fx16 { from { opacity: 0; transform: scale(1.06); filter: hue-rotate(-20deg) saturate(1.25); } to { opacity: 1; transform: scale(1); filter: hue-rotate(0) saturate(1); } }
+@keyframes fx17 { from { opacity: 0; transform: scale(1.06); filter: hue-rotate(20deg) saturate(1.25); } to { opacity: 1; transform: scale(1); filter: hue-rotate(0) saturate(1); } }
+
 body.slideshow-mode .book-controls,
 body.slideshow-mode .swipe-hint {
   display: none;
